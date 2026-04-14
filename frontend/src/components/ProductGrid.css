@@ -1,0 +1,127 @@
+.product-grid-section {
+  background: #fff;
+  padding: 10px 0 20px;
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+
+.product-grid-card {
+  background: #fff;
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+  overflow: hidden;
+}
+
+.product-grid-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 1;
+}
+
+.product-grid-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  overflow: hidden;
+}
+
+.product-grid-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.product-grid-badge {
+  position: absolute;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.product-grid-badge--new {
+  bottom: 8px;
+  left: 8px;
+  background: #fff;
+  color: #388e3c;
+  border: 1px solid #c8e6c9;
+}
+
+.product-grid-badge--ad {
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 10px;
+  border-radius: 4px;
+}
+
+.product-grid-rating {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #388e3c;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.product-grid-rating-count {
+  color: #999;
+  font-weight: 400;
+}
+
+.product-grid-info {
+  padding: 8px 10px 12px;
+}
+
+.product-grid-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: #555;
+  margin: 0 0 5px;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-grid-brand {
+  font-weight: 600;
+  color: #333;
+}
+
+.product-grid-prices {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.product-grid-original {
+  font-size: 12px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.product-grid-sale {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}

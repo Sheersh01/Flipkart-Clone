@@ -1,0 +1,120 @@
+.top-nav {
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.top-nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.top-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.top-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  border-radius: 22px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  border: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+.top-nav-btn:hover {
+  opacity: 0.85;
+}
+
+.top-nav-btn--flipkart {
+  background: #ffe500;
+  border-color: #ffe500;
+}
+
+.top-nav-btn--minutes {
+  background: #fff;
+  border-color: #e0e0e0;
+}
+
+.top-nav-btn--travel {
+  background: #fff;
+  border-color: #e0e0e0;
+}
+
+.top-nav-btn-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.top-nav-btn-text {
+  height: 14px;
+  object-fit: contain;
+}
+
+.top-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.top-nav-address {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #333;
+  cursor: pointer;
+}
+
+.top-nav-address-icon {
+  font-size: 15px;
+}
+
+.top-nav-address-label {
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.top-nav-address-text {
+  font-size: 13px;
+  color: #555;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-nav-address-arrow {
+  font-size: 18px;
+  color: #666;
+  font-weight: 500;
+}
+
+.top-nav-supercoin {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  cursor: pointer;
+}
+
+.supercoin-icon {
+  font-size: 18px;
+}
+
+.supercoin-count {
+  font-weight: 600;
+}
