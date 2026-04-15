@@ -1,0 +1,147 @@
+.product-header {
+  background: #fff;
+  border-bottom: 1px solid #d8d8d8;
+  padding: 12px 0;
+}
+
+.product-header-inner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.product-logo-pill {
+  flex-shrink: 0;
+  min-width: 210px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ffe500;
+  border: 1px solid #f2d500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+}
+
+.product-logo-pill-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.product-logo-pill-text {
+  height: 20px;
+  object-fit: contain;
+}
+
+.product-logo-pill-caret {
+  margin-left: 2px;
+}
+
+.product-search {
+  flex: 1;
+  min-width: 250px;
+  height: 44px;
+  border: 2px solid #2f80ed;
+  border-radius: 14px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+}
+
+.product-search-icon {
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+.product-search-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #4b5563;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+.product-search-input::placeholder {
+  color: #4b5563;
+  opacity: 1;
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.product-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #171717;
+  font-size: 17px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
+.product-action-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.product-action-caret {
+  transform: translateY(1px);
+}
+
+.product-action-label {
+  line-height: 1;
+}
+
+.product-action-cart {
+  position: relative;
+}
+
+.product-cart-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.product-cart-badge {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: #d30d19;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+@media (max-width: 960px) {
+  .product-header-inner {
+    flex-wrap: wrap;
+  }
+
+  .product-logo-pill {
+    min-width: 170px;
+  }
+
+  .product-search {
+    order: 3;
+    width: 100%;
+  }
+}
