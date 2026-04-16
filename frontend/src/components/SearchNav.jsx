@@ -8,7 +8,11 @@ import { useDebounce } from "../hooks/useDebounce";
 
 import SearchNavActions from "./SearchNavActions";
 
-function SearchNav({ showActions = false, showBrandButton = false }) {
+function SearchNav({
+  showActions = false,
+  showBrandButton = false,
+  enableAutoSearch = true,
+}) {
   const location = useLocation();
   const navigate = useNavigate();
   const currentSearchQuery = useMemo(() => {
@@ -24,18 +28,33 @@ function SearchNav({ showActions = false, showBrandButton = false }) {
 
   // Auto-search as user types (with debouncing)
   useEffect(() => {
+    if (!enableAutoSearch) {
+      return;
+    }
+
     const trimmedQuery = debouncedQuery.trim();
     if (trimmedQuery) {
       navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
-    } else {
-      // If search is cleared, go back to home
+    } else if (location.pathname === "/search") {
+      // If search is cleared on search page, go back to home
       navigate("/");
     }
-  }, [debouncedQuery, navigate]);
+  }, [debouncedQuery, navigate, location.pathname, enableAutoSearch]);
 
   function handleSearchSubmit(event) {
     event.preventDefault();
-    // Search is now handled by the debounced effect, so no action needed here
+
+    if (enableAutoSearch) {
+      return;
+    }
+
+    const trimmedQuery = query.trim();
+    if (trimmedQuery) {
+      navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+      return;
+    }
+
+    navigate("/");
   }
 
   return (
