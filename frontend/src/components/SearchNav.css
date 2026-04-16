@@ -11,6 +11,36 @@
   padding-bottom: 10px;
 }
 
+.search-nav-brand-pill {
+  flex-shrink: 0;
+  min-width: 210px;
+  height: 42px;
+  border-radius: 12px;
+  background: #ffe500;
+  border: 1px solid #f2d500;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  text-decoration: none;
+}
+
+.search-nav-brand-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.search-nav-brand-text {
+  height: 20px;
+  object-fit: contain;
+}
+
+.search-nav-brand-caret {
+  margin-left: 2px;
+}
+
 .search-bar {
   flex: 1;
   display: flex;
@@ -51,6 +81,11 @@
   align-items: center;
   gap: 4px;
   flex-shrink: 0;
+  overflow: visible;
+}
+
+.search-nav-action-wrapper {
+  position: relative;
 }
 
 .search-nav-action {
@@ -72,6 +107,10 @@
   background: #f5f5f5;
 }
 
+.search-nav-action-wrapper:hover .search-nav-action {
+  background: #f5f5f5;
+}
+
 .search-nav-action-icon {
   width: 24px;
   height: 24px;
@@ -81,8 +120,17 @@
   font-size: 15px;
 }
 
+.search-nav-action-wrapper {
+  position: relative;
+}
+
 .dropdown-arrow {
   margin-left: 2px;
+  transition: transform 0.25s ease;
+}
+
+.dropdown-arrow.rotated {
+  transform: rotate(180deg);
 }
 
 .search-nav-cart {
@@ -110,4 +158,180 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+}
+
+.search-nav-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 230px;
+  background: #fff;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  z-index: 50;
+  overflow: hidden;
+}
+
+.profile-dropdown {
+  min-width: 260px;
+}
+
+.more-dropdown {
+  min-width: 220px;
+}
+
+.dropdown-header {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #5f6368;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 12px 16px;
+  color: #212121;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1.2;
+  text-align: left;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: #f5f5f5;
+}
+
+.logout-item {
+  border-top: 1px solid #f0f0f0;
+  color: #d32f2f;
+}
+
+.logout-item:hover {
+  background: #fff1f1;
+}
+
+.dropdown-button {
+  font: inherit;
+}
+
+.login-cta {
+  font-weight: 600;
+  color: #1d4ed8;
+}
+
+.dropdown-copy {
+  padding: 10px 16px 14px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.4;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.auth-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-modal {
+  width: min(100%, 420px);
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+  padding: 20px;
+}
+
+.auth-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.auth-eyebrow {
+  margin: 0 0 6px;
+  color: #1d4ed8;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.auth-modal h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.auth-close-btn {
+  border: 0;
+  background: #f1f5f9;
+  color: #0f172a;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-form {
+  display: grid;
+  gap: 14px;
+}
+
+.auth-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 0.92rem;
+  color: #334155;
+}
+
+.auth-form input {
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 11px 12px;
+  font-size: 0.95rem;
+  font-family: inherit;
+}
+
+.auth-submit-btn {
+  border: 0;
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #1d4ed8, #2563eb);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-submit-btn:hover {
+  filter: brightness(1.02);
+}
+
+@media (max-width: 960px) {
+  .search-nav-inner {
+    flex-wrap: wrap;
+  }
+
+  .search-nav-brand-pill {
+    min-width: 170px;
+  }
+
+  .search-bar {
+    order: 3;
+    width: 100%;
+  }
 }

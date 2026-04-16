@@ -85,6 +85,18 @@
   gap: 10px;
 }
 
+.cart-item-thumb-link,
+.cart-rail-thumb-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-rail-name-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .cart-item-thumb {
   width: 120px;
   height: 120px;
@@ -456,7 +468,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 16px;
+  padding: 16px 16px;
   line-height: 1;
 }
 

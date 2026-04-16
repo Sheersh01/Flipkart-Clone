@@ -72,6 +72,7 @@
   justify-content: center;
   color: #212121;
   font-size: 26px;
+  text-decoration: none;
 }
 
 .payment-secure-pill {
@@ -99,9 +100,16 @@
 }
 
 .payment-method-item {
+  width: 100%;
   min-height: 68px;
   padding: 14px 16px;
   border-bottom: 1px solid #ececec;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;

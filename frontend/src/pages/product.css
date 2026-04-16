@@ -417,7 +417,9 @@
   margin-top: 8px;
   border-radius: 16px;
   overflow: hidden;
-  transition: background-color 0.28s ease, box-shadow 0.28s ease;
+  transition:
+    background-color 0.28s ease,
+    box-shadow 0.28s ease;
 }
 
 .emi-accordion-shell--open {
@@ -457,7 +459,11 @@
   overflow: hidden;
   transform: translateY(-4px);
   pointer-events: none;
-  transition: max-height 0.3s ease, opacity 0.24s ease, transform 0.24s ease, padding 0.24s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.24s ease,
+    transform 0.24s ease,
+    padding 0.24s ease;
 }
 
 .emi-accordion-shell--open .emi-dropdown-panel {
@@ -544,7 +550,10 @@
   align-items: center;
   justify-content: center;
   z-index: 2;
-  transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 
 .emi-carousel-arrow:hover {
@@ -607,7 +616,7 @@
 }
 
 .delivery-row--home {
-  background: #EEF7FF;
+  background: #eef7ff;
 }
 
 .delivery-row--home p {
@@ -758,7 +767,10 @@
   opacity: 0;
   overflow: hidden;
   transform: translateY(-4px);
-  transition: max-height 0.32s ease, opacity 0.24s ease, transform 0.24s ease;
+  transition:
+    max-height 0.32s ease,
+    opacity 0.24s ease,
+    transform 0.24s ease;
 }
 
 .protection-accordion-panel--open {
@@ -923,7 +935,10 @@
   opacity: 0;
   overflow: hidden;
   transform: translateY(-4px);
-  transition: max-height 0.34s ease, opacity 0.24s ease, transform 0.24s ease;
+  transition:
+    max-height 0.34s ease,
+    opacity 0.24s ease,
+    transform 0.24s ease;
 }
 
 .details-accordion-panel--open {
@@ -1012,7 +1027,10 @@
   opacity: 0;
   overflow: hidden;
   transform: translateY(-4px);
-  transition: max-height 0.3s ease, opacity 0.22s ease, transform 0.22s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.22s ease,
+    transform 0.22s ease;
 }
 
 .details-extra-section--open {
@@ -1081,7 +1099,10 @@
   opacity: 0;
   overflow: hidden;
   transform: translateY(-4px);
-  transition: max-height 0.32s ease, opacity 0.24s ease, transform 0.24s ease;
+  transition:
+    max-height 0.32s ease,
+    opacity 0.24s ease,
+    transform 0.24s ease;
 }
 
 .qa-accordion-panel--open {
@@ -1149,7 +1170,10 @@
   opacity: 0;
   overflow: hidden;
   transform: translateY(-4px);
-  transition: max-height 0.3s ease, opacity 0.22s ease, transform 0.22s ease;
+  transition:
+    max-height 0.3s ease,
+    opacity 0.22s ease,
+    transform 0.22s ease;
 }
 
 .reviews-accordion-panel--open {

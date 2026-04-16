@@ -1,28 +1,26 @@
-import { Link } from "react-router-dom";
-import flipkartWordmark from "../assets/payment/flipkart.png";
-import razorpayIcon from "../assets/payment/razorpay.svg";
-import stripeIcon from "../assets/payment/stripe.svg";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import codIcon from "../assets/payment/cod.svg";
+import cardIcon from "../assets/payment/flipkart.png";
 import axisLogo from "../assets/payment/Axis.png";
 import sbiLogo from "../assets/payment/SBI.png";
+import SearchNav from "../components/SearchNav";
 import BottomFooter from "../components/BottomFooter";
+import { createOrder, getCheckoutSummary, payOrder } from "../lib/apiClient";
 import "./payment.css";
+
+const ADDRESS_STORAGE_KEY = "checkoutAddress";
 
 const paymentMethods = [
   {
-    title: "Razorpay",
-    subtitle: "Fast checkout using cards, UPI and wallet",
-    extra: "Get up to 5% cashback • 2 offers available",
-    icon: razorpayIcon,
-    active: true,
+    key: "card",
+    title: "Card / UPI",
+    subtitle: "Pay instantly using card or UPI",
+    extra: "Secure checkout",
+    icon: cardIcon,
   },
   {
-    title: "Stripe",
-    subtitle: "Pay securely with international card support",
-    extra: "Secure global payment gateway",
-    icon: stripeIcon,
-  },
-  {
+    key: "cash_on_delivery",
     title: "Cash on Delivery",
     subtitle: "Pay when your order is delivered",
     extra: "Available for selected pin codes",
@@ -31,17 +29,97 @@ const paymentMethods = [
 ];
 
 function PaymentPage() {
+  const navigate = useNavigate();
+
+  const [activeMethodKey, setActiveMethodKey] = useState("card");
+  const [checkout, setCheckout] = useState({ items: [], summary: null });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCheckout() {
+      try {
+        setLoading(true);
+        const data = await getCheckoutSummary();
+        if (isMounted) {
+          setCheckout(data);
+          setError("");
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(err.message || "Unable to load checkout data");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadCheckout();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const summary = useMemo(
+    () =>
+      checkout.summary || {
+        subtotal: 0,
+        discount: 0,
+        platformFee: 0,
+        total: 0,
+      },
+    [checkout.summary],
+  );
+
+  async function handlePay() {
+    try {
+      if (!checkout.items.length) {
+        alert("Cart is empty. Add products before payment.");
+        return;
+      }
+
+      setIsSubmitting(true);
+
+      const cachedAddressRaw = localStorage.getItem(ADDRESS_STORAGE_KEY);
+      const cachedAddress = cachedAddressRaw
+        ? JSON.parse(cachedAddressRaw)
+        : null;
+
+      const shippingAddress = cachedAddress ||
+        checkout.shippingAddress || {
+          fullName: "Sheersh Saxena",
+          phone: "7458902737",
+          pincode: "441108",
+          addressLine: "IIT NAGPUR, Near IIITN Main Gate",
+          city: "Nagpur",
+          state: "Maharashtra",
+          label: "HOME",
+        };
+
+      const order = await createOrder({
+        shippingAddress,
+        paymentMethod: activeMethodKey,
+      });
+
+      await payOrder({ orderId: order.orderId, method: activeMethodKey });
+
+      navigate(`/order-confirmation/${order.orderId}`);
+    } catch (err) {
+      alert(err.message || "Payment failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <div className="payment-page">
-      <header className="payment-topbar">
-        <div className="payment-topbar-inner">
-          <img
-            src={flipkartWordmark}
-            alt="Flipkart"
-            className="payment-topbar-logo"
-          />
-        </div>
-      </header>
+      <SearchNav showActions showBrandButton />
 
       <main className="payment-main">
         <div className="container payment-layout">
@@ -53,51 +131,49 @@ function PaymentPage() {
                   className="payment-back-btn"
                   aria-label="Go back to order summary"
                 >
-                  ←
+                  {"<"}
                 </Link>
                 <span>Complete Payment</span>
               </div>
-              <div className="payment-secure-pill">🔒 100% Secure</div>
+              <div className="payment-secure-pill">100% Secure</div>
             </div>
 
             <div className="payment-card payment-left-panel">
               <div className="payment-method-list">
-                {paymentMethods.map((method, index) => (
-                  <div
-                    key={method.title}
-                    className={`payment-method-item${method.active ? " payment-method-item--active" : ""}`}
-                  >
-                    <div className="payment-method-icon">
-                      <img src={method.icon} alt={`${method.title} icon`} />
-                    </div>
-                    <div className="payment-method-text">
-                      <p className="payment-method-title">{method.title}</p>
-                      <p className="payment-method-subtitle">
-                        {method.subtitle}
-                      </p>
-                      <p
-                        className="payment-method-subtitle"
-                        style={{ color: method.active ? "#1e9c4e" : "#6b7280" }}
-                      >
-                        {method.extra}
-                      </p>
-                    </div>
-                    {index > 0 && (
-                      <div className="payment-method-unavailable">
-                        <span>Unavailable</span>
-                        <span className="payment-method-unavailable-icon">
-                          ?
-                        </span>
+                {paymentMethods.map((method) => {
+                  const isActive = activeMethodKey === method.key;
+
+                  return (
+                    <button
+                      key={method.title}
+                      type="button"
+                      className={`payment-method-item${isActive ? " payment-method-item--active" : ""}`}
+                      onClick={() => setActiveMethodKey(method.key)}
+                    >
+                      <div className="payment-method-icon">
+                        <img src={method.icon} alt={`${method.title} icon`} />
                       </div>
-                    )}
-                  </div>
-                ))}
+                      <div className="payment-method-text">
+                        <p className="payment-method-title">{method.title}</p>
+                        <p className="payment-method-subtitle">
+                          {method.subtitle}
+                        </p>
+                        <p
+                          className="payment-method-subtitle"
+                          style={{ color: isActive ? "#1e9c4e" : "#6b7280" }}
+                        >
+                          {method.extra}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
 
               <div className="payment-card-panel">
                 <p className="payment-note">
-                  Note: Please ensure your card can be used for online
-                  transactions. <a href="#">Learn More</a>
+                  Note: Please ensure your selected payment method is available.
+                  <a href="#"> Learn More</a>
                 </p>
 
                 <div className="payment-form-card">
@@ -107,13 +183,10 @@ function PaymentPage() {
                     </label>
                     <input
                       id="card-number"
-                      className="payment-input payment-input--error"
+                      className="payment-input"
                       defaultValue=""
                       placeholder="XXXX XXXX XXXX XXXX"
                     />
-                    <p className="payment-error-text">
-                      Card number is required
-                    </p>
                   </div>
 
                   <div className="payment-row">
@@ -143,9 +216,19 @@ function PaymentPage() {
                     </div>
                   </div>
 
-                  <button type="button" className="payment-submit-btn">
-                    Pay ₹508
+                  <button
+                    type="button"
+                    className="payment-submit-btn"
+                    disabled={isSubmitting || loading}
+                    onClick={handlePay}
+                  >
+                    {isSubmitting ? "Processing..." : `Pay Rs.${summary.total}`}
                   </button>
+
+                  {loading && (
+                    <p className="payment-error-text">Loading summary...</p>
+                  )}
+                  {error && <p className="payment-error-text">{error}</p>}
                 </div>
               </div>
             </div>
@@ -157,7 +240,7 @@ function PaymentPage() {
                   <a href="#">Terms of use</a> | <a href="#">Security</a> |{" "}
                   <a href="#">Privacy</a>
                 </div>
-                <div>© 2007-2026 Flipkart.com</div>
+                <div>(c) 2007-2026 Flipkart.com</div>
                 <div>
                   Need help? Visit the <a href="#">Help Center</a> or{" "}
                   <a href="#">Contact Us</a>
@@ -170,31 +253,19 @@ function PaymentPage() {
             <div className="payment-right-summary">
               <div className="payment-summary-row">
                 <span>MRP (incl. of all taxes)</span>
-                <strong>₹600</strong>
+                <strong>Rs.{summary.subtotal + summary.discount}</strong>
               </div>
               <div className="payment-summary-row">
                 <span>Fees</span>
-                <strong>₹7</strong>
-              </div>
-              <div className="payment-summary-row">
-                <span>Platform Fee</span>
-                <strong>₹7</strong>
+                <strong>Rs.{summary.platformFee}</strong>
               </div>
               <div className="payment-summary-row">
                 <span>Discounts</span>
-                <strong>-₹99</strong>
-              </div>
-              <div className="payment-summary-row">
-                <span>MRP Discount</span>
-                <strong>-₹66</strong>
-              </div>
-              <div className="payment-summary-row">
-                <span>Coupons for you</span>
-                <strong>-₹33</strong>
+                <strong>-Rs.{summary.discount}</strong>
               </div>
               <div className="payment-summary-row payment-summary-row--final">
                 <span>Total Amount</span>
-                <strong>₹508</strong>
+                <strong>Rs.{summary.total}</strong>
               </div>
             </div>
 

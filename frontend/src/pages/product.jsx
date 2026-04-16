@@ -1,8 +1,12 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProductNavHeader from "../components/ProductNavHeader";
 import ProductGrid from "../components/ProductGrid";
 import BottomFooter from "../components/BottomFooter";
+import { addCartItem, getProductById } from "../lib/apiClient";
+import { resolveProductImages } from "../lib/productImageMap";
+import { useAppContext } from "../context/AppContext";
 import {
   productAssets,
   productContent,
@@ -12,14 +16,16 @@ import "./product.css";
 
 function ProductPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAppContext();
+  const [productData, setProductData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [pageError, setPageError] = useState("");
+  const [isCartLoading, setIsCartLoading] = useState(false);
 
   const {
     likeIcon,
     shareIcon,
-    mainImage,
-    galleryImages,
-    colorOne,
-    colorTwo,
     wowDealIcon,
     sevenDaysReturnIcon,
     cashOnDeliveryIcon,
@@ -29,8 +35,10 @@ function ProductPage() {
     shopIcon,
   } = productAssets;
 
-  const { emiCards, protectionPlanItems, detailsTabs, generalDetails } =
-    useMemo(() => productContent, []);
+  const { emiCards, protectionPlanItems, detailsTabs } = useMemo(
+    () => productContent,
+    [],
+  );
 
   const {
     selectedId,
@@ -55,17 +63,138 @@ function ProductPage() {
     setActiveDetailsTab,
   } = useProductPageState(id, emiCards.length);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProduct() {
+      try {
+        setLoading(true);
+        setPageError("");
+        const data = await getProductById(id);
+        if (isMounted) {
+          setProductData(data);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setPageError(error.message || "Unable to load product");
+          setProductData(null);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProduct();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id]);
+
+  const dynamicGallery = useMemo(() => {
+    return resolveProductImages(productData?.imageKeys || []);
+  }, [productData]);
+
+  const mainImage = dynamicGallery[0] || "";
+  const galleryImages = dynamicGallery;
+
+  const displayTitle = productData?.name || "Product";
+  const displayBrand = productData?.brand || "Brand";
+  const displayCategory = productData?.category || "Category";
+  const displayRating = Number(productData?.rating || 0);
+  const displayRatingCount = Number(productData?.ratingCount || 0);
+  const displayMrp = Number(productData?.mrpPrice || 0);
+  const displaySalePrice = Number(productData?.salePrice || 0);
+  const displayStock = Number.isFinite(Number(productData?.stock))
+    ? Number(productData.stock)
+    : 0;
+  const cartProductId = Number(productData?.cartProductId);
+  const isOutOfStock = displayStock <= 0;
+  const stockStatusText = isOutOfStock
+    ? "Out of stock"
+    : displayStock <= 5
+      ? `Only ${displayStock} left`
+      : `In stock (${displayStock} available)`;
+  const buyNowPrice = Math.max(displaySalePrice - 65, 1);
+  const displayDiscount =
+    displayMrp > 0
+      ? Math.max(
+          Math.round(((displayMrp - displaySalePrice) / displayMrp) * 100),
+          0,
+        )
+      : 0;
+  const specificationEntries = useMemo(() => {
+    const specs = productData?.specifications || {};
+
+    return Object.entries(specs)
+      .filter(
+        ([, value]) => value !== null && value !== undefined && value !== "",
+      )
+      .map(([key, value]) => {
+        const label = key
+          .replace(/([A-Z])/g, " $1")
+          .replace(/^./, (char) => char.toUpperCase());
+
+        const renderedValue =
+          typeof value === "object" ? JSON.stringify(value) : String(value);
+
+        return [label, renderedValue];
+      });
+  }, [productData]);
+
+  async function handleAddToCart() {
+    if (!productData) {
+      return false;
+    }
+
+    if (isOutOfStock) {
+      alert("This product is currently out of stock");
+      return false;
+    }
+
+    if (!isAuthenticated) {
+      alert("Please log in to add items to cart");
+      return false;
+    }
+
+    try {
+      setIsCartLoading(true);
+      await addCartItem(cartProductId, 1);
+      alert("Added to cart");
+      return true;
+    } catch (error) {
+      alert(error.message || "Could not add to cart");
+      return false;
+    } finally {
+      setIsCartLoading(false);
+    }
+  }
+
+  async function handleBuyNow() {
+    const added = await handleAddToCart();
+    if (added) {
+      navigate("/place-order");
+    }
+  }
+
   return (
     <div className="product-page" id="product-page-root">
       <ProductNavHeader />
 
       <main className="product-main" id="product-main-content">
         <div className="container product-main-inner">
-          <p className="product-breadcrumbs product-breadcrumbs--top">
-            Home / Computers / Computer Peripherals / Keyboards, Mouse &
-            Accessories / Mouse / Portronics Mouse
-          </p>
+          {loading && <p className="product-breadcrumbs">Loading product...</p>}
+          {pageError && (
+            <p className="product-breadcrumbs" style={{ color: "#b91c1c" }}>
+              {pageError}
+            </p>
+          )}
 
+          <p className="product-breadcrumbs product-breadcrumbs--top">
+            Home / {displayCategory} / {displayBrand} / {displayTitle}
+          </p>
           <div className="product-content-grid">
             <section className="product-left-column">
               <div className="product-left-sticky">
@@ -84,11 +213,15 @@ function ProductPage() {
 
                 <div className="product-image-grid">
                   <div className="product-image-card product-image-card--main">
-                    <img
-                      src={mainImage}
-                      alt="Portronics Vader 2.0 mouse"
-                      className="product-media-image"
-                    />
+                    {mainImage ? (
+                      <img
+                        src={mainImage}
+                        alt={displayTitle}
+                        className="product-media-image"
+                      />
+                    ) : (
+                      <p className="product-breadcrumbs">Image unavailable</p>
+                    )}
                   </div>
 
                   {galleryImages.slice(1).map((image, index) => (
@@ -107,60 +240,56 @@ function ProductPage() {
             <section className="product-right-column">
               <div className="product-right-scroll">
                 <div className="product-brand-row">
-                  <img
-                    src={colorTwo}
-                    alt="Brand visual"
-                    className="brand-thumb"
-                  />
+                  {mainImage ? (
+                    <img
+                      src={mainImage}
+                      alt={displayTitle}
+                      className="brand-thumb"
+                    />
+                  ) : null}
                   <div className="brand-title-wrap">
-                    <p className="brand-title">
-                      AMKETTE XS Series Flow Ergonomic Optical Mouse Multi...
-                    </p>
+                    <p className="brand-title">{displayTitle}</p>
                     <p className="brand-price-line">
-                      4.3 ★ | ₹599 <span className="ad-chip">AD</span>
+                      {displayRating} ★ | ₹{displaySalePrice}{" "}
+                      <span className="ad-chip">AD</span>
                     </p>
                   </div>
                 </div>
 
                 <p className="selected-color-text">
-                  Selected Color: <span>Black</span>
+                  Category: <span>{displayCategory}</span>
                 </p>
-                <div className="color-select-row">
-                  <button
-                    className="color-card color-card--active"
-                    aria-label="Select black color"
-                  >
-                    <img src={colorOne} alt="Black color" />
-                  </button>
-                  <button
-                    className="color-card"
-                    aria-label="Select white color"
-                  >
-                    <img src={colorTwo} alt="White color" />
-                  </button>
-                </div>
 
                 <h1 className="product-title-main">
-                  Portronics Vader 2.0 Wired Ergonomic Optical Gaming Mouse 7
-                  Prog.
+                  {displayBrand} {displayTitle}
                   <span className="id-pill">ID: {selectedId}</span>
                 </h1>
 
                 <div className="product-rating-row">
-                  <span className="rating-pill">4.4 ★</span>
-                  <span className="rating-count">339</span>
+                  <span className="rating-pill">{displayRating} ★</span>
+                  <span className="rating-count">{displayRatingCount}</span>
                 </div>
 
                 <div className="deal-row">
                   <span className="deal-chip">Hot Deal</span>
-                  <span className="discount-text">67% </span>
-                  <span className="price-old">1,499</span>
-                  <span className="price-new">₹499</span>
+                  <span className="discount-text">{displayDiscount}% </span>
+                  <span className="price-old">{displayMrp}</span>
+                  <span className="price-new">₹{displaySalePrice}</span>
                 </div>
+
+                <p
+                  className="stock-status"
+                  aria-live="polite"
+                  data-stock-state={
+                    isOutOfStock ? "out" : displayStock <= 5 ? "low" : "in"
+                  }
+                >
+                  {stockStatusText}
+                </p>
 
                 <div className="wow-deal-strip">
                   <img src={wowDealIcon} alt="Wow deal" />
-                  <span>Buy at ₹434</span>
+                  <span>Buy at ₹{buyNowPrice}</span>
                 </div>
 
                 <div className="accordion-list">
@@ -414,7 +543,7 @@ function ProductPage() {
                       <div className="details-specs">
                         <h3>General</h3>
                         <div className="details-spec-grid">
-                          {generalDetails.map(([label, value]) => (
+                          {specificationEntries.map(([label, value]) => (
                             <div className="details-spec-item" key={label}>
                               <span className="details-spec-label">
                                 {label}
@@ -425,38 +554,19 @@ function ProductPage() {
                             </div>
                           ))}
                         </div>
-
-                        <h3>Additional Features</h3>
-                        <div className="details-spec-single">
-                          <span className="details-spec-label">
-                            Other Features
-                          </span>
-                          <span className="details-spec-value">
-                            Adjustable DPI Upto 7200, Polling Rate 500, RGB
-                            Light Effect, Programmable Keys
-                          </span>
-                        </div>
-
-                        <div
-                          className={`details-extra-section${isDetailsExpanded ? " details-extra-section--open" : ""}`}
-                        >
-                          <h3>Connectivity and Power Features</h3>
-                          <div className="details-spec-single">
-                            <span className="details-spec-label">
-                              Bluetooth
-                            </span>
-                            <span className="details-spec-value">No</span>
-                          </div>
-                        </div>
+                        {specificationEntries.length === 0 ? (
+                          <p className="details-spec-value">
+                            Specifications are not available for this product.
+                          </p>
+                        ) : null}
                       </div>
                     )}
 
                     {activeDetailsTab === "description" && (
                       <div className="details-description">
                         <p>
-                          Portronics Vader 2.0 is a wired ergonomic gaming mouse
-                          with adjustable DPI, programmable keys, and RGB
-                          lighting for everyday and gaming use.
+                          {productData?.description ||
+                            "Description is not available for this product."}
                         </p>
                       </div>
                     )}
@@ -468,14 +578,14 @@ function ProductPage() {
                             Manufacturer
                           </span>
                           <span className="details-spec-value">
-                            Portronics Digital Pvt. Ltd.
+                            {displayBrand}
                           </span>
                         </div>
                         <div className="details-spec-single">
-                          <span className="details-spec-label">
-                            Country of Origin
+                          <span className="details-spec-label">Category</span>
+                          <span className="details-spec-value">
+                            {displayCategory}
                           </span>
-                          <span className="details-spec-value">India</span>
                         </div>
                       </div>
                     )}
@@ -557,11 +667,21 @@ function ProductPage() {
               </div>
 
               <div className="right-footer-actions">
-                <button className="btn-cart" type="button">
+                <button
+                  className="btn-cart"
+                  type="button"
+                  onClick={handleAddToCart}
+                  disabled={isCartLoading || !productData || isOutOfStock}
+                >
                   Add to cart
                 </button>
-                <button className="btn-buy" type="button">
-                  Buy at ₹499
+                <button
+                  className="btn-buy"
+                  type="button"
+                  onClick={handleBuyNow}
+                  disabled={isCartLoading || !productData || isOutOfStock}
+                >
+                  Buy at ₹{displaySalePrice}
                 </button>
               </div>
             </section>
@@ -572,7 +692,7 @@ function ProductPage() {
             aria-label="Similar products"
           >
             <h2 className="similar-products-title">Similar products</h2>
-            <ProductGrid />
+            <ProductGrid showFilters={false} excludeProductId={selectedId} />
           </section>
         </div>
       </main>

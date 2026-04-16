@@ -21,6 +21,7 @@ const suggestedForYou = [
     strike: "399",
     off: "64% off",
     image: gloves,
+    productId: 2,
   },
   {
     title: "ETSHandPro Nitrile Po...",
@@ -28,6 +29,7 @@ const suggestedForYou = [
     strike: "899",
     off: "81% off",
     image: cartProductImage,
+    productId: 2,
   },
   {
     title: "BUWCH Wet and Dry G...",
@@ -35,6 +37,7 @@ const suggestedForYou = [
     strike: "399",
     off: "69% off",
     image: oxygenMeter,
+    productId: 5,
   },
   {
     title: "Cowox Gloves Wet and...",
@@ -42,6 +45,7 @@ const suggestedForYou = [
     strike: "1699",
     off: "83% off",
     image: cartProductImage,
+    productId: 6,
   },
   {
     title: "TRIBHU Latex Medical ...",
@@ -50,6 +54,7 @@ const suggestedForYou = [
     off: "62% off",
     image: gloves,
     assured: true,
+    productId: 2,
   },
 ];
 
@@ -61,6 +66,7 @@ const itemsMissed = [
     off: "66% off",
     image: mouseImg,
     assured: true,
+    productId: 1,
   },
   {
     title: "KAEZRI Solid Men Rou...",
@@ -68,6 +74,7 @@ const itemsMissed = [
     strike: "1999",
     off: "85% off",
     image: mensShirt,
+    productId: 8,
   },
   {
     title: "PRAYOMA ENTERPRISE...",
@@ -75,6 +82,7 @@ const itemsMissed = [
     strike: "3999",
     off: "74% off",
     image: trolley,
+    productId: 3,
   },
   {
     title: "Dicxy Scott Originals M...",
@@ -83,6 +91,7 @@ const itemsMissed = [
     off: "33% off",
     image: bodyWash,
     assured: true,
+    productId: 4,
   },
   {
     title: "DENVER Just Relax and...",
@@ -91,6 +100,7 @@ const itemsMissed = [
     off: "43% off",
     image: bodyWash,
     assured: true,
+    productId: 4,
   },
 ];
 
@@ -102,6 +112,7 @@ const recentlyViewed = [
     off: "66% off",
     image: mouseImg,
     assured: true,
+    productId: 1,
   },
   {
     title: "KAEZRI Solid Men Rou...",
@@ -109,6 +120,7 @@ const recentlyViewed = [
     strike: "1999",
     off: "85% off",
     image: mensShirt,
+    productId: 8,
   },
   {
     title: "PRAYOMA ENTERPRISE...",
@@ -116,6 +128,7 @@ const recentlyViewed = [
     strike: "3999",
     off: "74% off",
     image: trolley,
+    productId: 3,
   },
   {
     title: "Dicxy Scott Originals M...",
@@ -124,6 +137,7 @@ const recentlyViewed = [
     off: "33% off",
     image: bodyWash,
     assured: true,
+    productId: 4,
   },
   {
     title: "DENVER Just Relax and...",
@@ -132,6 +146,7 @@ const recentlyViewed = [
     off: "43% off",
     image: bodyWash,
     assured: true,
+    productId: 4,
   },
 ];
 

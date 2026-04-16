@@ -1,135 +1,136 @@
 import "./ProductGrid.css";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { getCategories, getProducts } from "../lib/apiClient";
 
-// Products folder
-import trolley from "../assets/home/products/290-1-pp-fa06-grotheory-grey-450-original-imahmfz7nqpgyhzu.jpeg";
-import gloves from "../assets/home/products/100-medical-556-e-solutions-original-imah5vm4cckncw8y.png";
-import hooks from "../assets/home/products/50-50-50-pack-wall-hook-wait2shop-original-imahfzffdzdmfczy.jpeg";
-import kitchenRack from "../assets/home/products/containers-kitchen-rack-steel-multipurpose-heavy-stainless-steel-original-imahhyn5hghbpypy.jpeg";
-import fruitTrolley from "../assets/home/products/square-pipe-fruit-and-vegetable-trolly-4-layer-kitchen-bazzar-original-imag2fhzrztzekny.jpeg";
-import spiceHolder from "../assets/home/products/kombuis-container-spice-holder-kombuis-kitchenware-original-imahjcgqqyfffnus.jpeg";
-import cabinet from "../assets/home/products/39-5-layers-pink-plastic-cabinet-for-compact-homes-maxtid-45-original-imahmhggsh94j4hh.jpeg";
-import organizer from "../assets/home/products/value-model-2-0-kombuis-kitchenware-original-imaheufmgj6wkk2a.jpeg";
+function ProductGrid({
+  showFilters = true,
+  excludeProductId = null,
+  initialSearch = "",
+}) {
+  const normalizedInitialSearch = String(initialSearch || "").trim();
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(normalizedInitialSearch);
+  const [activeSearch, setActiveSearch] = useState(normalizedInitialSearch);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-// StillLookingForThese folder
-import bodyWash from "../assets/home/stillLookingForThese/400-just-relax-and-recharge-body-wash-2-denver-original-imah2dhyajr5bc9s.jpeg";
-import oxygenMeter from "../assets/home/stillLookingForThese/healthcare-oxygen-flow-meter-adjustment-valve-regulator-with-original-imahcrgmah4pgmzh.jpeg";
-import mensShirt from "../assets/home/stillLookingForThese/m-kawler-light-2410-sk-creation-original-imahh6ctamwj4hpd.jpeg";
-import surgicalGloves from "../assets/home/stillLookingForThese/20-premium-quality-gloves-dm-india-original-imagevz4bzgtvrpx.jpeg";
+  useEffect(() => {
+    setSearchTerm(normalizedInitialSearch);
+    setActiveSearch(normalizedInitialSearch);
+  }, [normalizedInitialSearch]);
 
-const products = [
-  {
-    id: 1,
-    img: trolley,
-    badge: "New Arrival",
-    badgeType: "new",
-    brand: "PRAYOMA ENTERPRISE",
-    name: "Plastic Kit...",
-    originalPrice: "3,999",
-    salePrice: "1,000",
-  },
-  {
-    id: 2,
-    img: gloves,
-    rating: "4.1",
-    ratingCount: "413",
-    brand: "E Solutions",
-    name: "medical-556 Rubber, Nitr...",
-    originalPrice: "999",
-    salePrice: "183",
-  },
-  {
-    id: 3,
-    img: cabinet,
-    brand: "Gildan",
-    name: "Men Solid Round Neck Pure C...",
-    originalPrice: "1,999",
-    salePrice: "151",
-  },
-  {
-    id: 4,
-    img: bodyWash,
-    rating: "4.4",
-    ratingCount: "120",
-    badge: "AD",
-    badgeType: "ad",
-    brand: "DENVER",
-    name: "Recharge Ginseng Body Wa...",
-    originalPrice: "298",
-    salePrice: "178",
-  },
-  {
-    id: 5,
-    img: oxygenMeter,
-    brand: "URMIT SURGICAL",
-    name: "Oxygen Flow Me...",
-    originalPrice: "999",
-    salePrice: "826",
-  },
-  {
-    id: 6,
-    img: surgicalGloves,
-    brand: "E Solutions",
-    name: "E medical gloves blue-26...",
-    originalPrice: "1,124",
-    salePrice: "206",
-  },
-  {
-    id: 7,
-    img: hooks,
-    rating: "4.7",
-    ratingCount: "50",
-    brand: "KHODALEWAY",
-    name: "PACK OF 45 Hook 45",
-    originalPrice: "599",
-    salePrice: "118",
-  },
-  {
-    id: 8,
-    img: mensShirt,
-    brand: "NVGARMENT",
-    name: "Men Graphic Print Rou...",
-    originalPrice: "799",
-    salePrice: "115",
-  },
-  {
-    id: 9,
-    img: spiceHolder,
-    brand: "Kombuis",
-    name: "Container Spice Holder...",
-    originalPrice: "899",
-    salePrice: "249",
-  },
-  {
-    id: 10,
-    img: organizer,
-    brand: "Kombuis",
-    name: "Kitchenware Original...",
-    originalPrice: "1,299",
-    salePrice: "399",
-  },
-  {
-    id: 11,
-    img: kitchenRack,
-    brand: "Kitchen Rack",
-    name: "Steel Multipurpose Heavy...",
-    originalPrice: "1,499",
-    salePrice: "549",
-  },
-  {
-    id: 12,
-    img: fruitTrolley,
-    brand: "COMBO",
-    name: "Vegetable Trolley + Cylinder Trolley",
-    originalPrice: "1,899",
-    salePrice: "899",
-  },
-];
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setActiveSearch(searchTerm.trim());
+    }, 300);
 
-function ProductGrid() {
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCategories() {
+      try {
+        const data = await getCategories();
+        if (isMounted) {
+          setCategories(data);
+        }
+      } catch {
+        if (isMounted) {
+          setCategories([]);
+        }
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadProducts() {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await getProducts({
+          search: activeSearch,
+          category: selectedCategory,
+          limit: 24,
+        });
+
+        if (!isMounted) {
+          return;
+        }
+
+        const filteredItems = excludeProductId
+          ? data.items.filter((item) => item.id !== Number(excludeProductId))
+          : data.items;
+
+        setProducts(filteredItems);
+      } catch (err) {
+        if (isMounted) {
+          setError(err.message || "Unable to fetch products");
+          setProducts([]);
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeSearch, selectedCategory, excludeProductId]);
+
   return (
     <section className="product-grid-section" id="product-grid">
       <div className="container">
+        {showFilters && (
+          <div className="product-grid-filters">
+            <input
+              type="text"
+              className="product-grid-search"
+              value={searchTerm}
+              placeholder="Search by product or brand"
+              onChange={(event) => setSearchTerm(event.target.value)}
+              aria-label="Search products by name"
+            />
+            <select
+              className="product-grid-category"
+              value={selectedCategory}
+              onChange={(event) => setSelectedCategory(event.target.value)}
+              aria-label="Filter products by category"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.slug}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {loading && <p className="product-grid-meta">Loading products...</p>}
+        {error && (
+          <p className="product-grid-meta product-grid-meta--error">{error}</p>
+        )}
+        {!loading && !error && products.length === 0 && (
+          <p className="product-grid-meta">No products found.</p>
+        )}
+
         <div className="product-grid">
           {products.map((p) => (
             <Link
@@ -139,7 +140,11 @@ function ProductGrid() {
               id={`product-${p.id}`}
             >
               <div className="product-grid-img-wrap">
-                <img src={p.img} alt={p.name} className="product-grid-img" />
+                <img
+                  src={p.imageKey || ""}
+                  alt={p.name}
+                  className="product-grid-img"
+                />
                 {p.badge && (
                   <span
                     className={`product-grid-badge product-grid-badge--${p.badgeType}`}
@@ -151,7 +156,7 @@ function ProductGrid() {
                   <span className="product-grid-rating">
                     {p.rating} ★{" "}
                     <span className="product-grid-rating-count">
-                      ({p.ratingCount})
+                      ({p.ratingCount || 0})
                     </span>
                   </span>
                 )}
@@ -161,9 +166,7 @@ function ProductGrid() {
                   <span className="product-grid-brand">{p.brand}</span> {p.name}
                 </p>
                 <div className="product-grid-prices">
-                  <span className="product-grid-original">
-                    ₹{p.originalPrice}
-                  </span>
+                  <span className="product-grid-original">₹{p.mrpPrice}</span>
                   <span className="product-grid-sale">₹{p.salePrice}</span>
                 </div>
               </div>

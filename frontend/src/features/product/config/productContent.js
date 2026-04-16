@@ -5,15 +5,6 @@ import cartIcon from "../../../assets/home/searchNavSide/header_cart_v4-6ac9a8.s
 import likeIcon from "../../../assets/products/imgIcon/like.png";
 import shareIcon from "../../../assets/products/imgIcon/share.png";
 
-import mainImage from "../../../assets/products/mainProductImg/vader-2-0-wired-gaming-mouse-7-programmable-button-upto-dpi-7100-original-imahezdhmfgdnvgc.jpeg";
-import galleryOne from "../../../assets/products/topAdImg/toad-14-portronics-original-imag9xnpexundzez.jpeg";
-import galleryTwo from "../../../assets/products/topAdImg/toad-23-adjustable-dpi-2-4ghz-portronics-original-imagenxwgzsqub38.jpeg";
-import galleryThree from "../../../assets/products/topAdImg/xs-series-flow-multi-device-3200-dpi-rechargeable-amkette-original-imahgymsfhf8gzjn (2).jpeg";
-import galleryFour from "../../../assets/products/topAdImg/zeb-transformer-m-plus-zebronics-original-imahh3h35e9fvnng.jpeg";
-
-import colorOne from "../../../assets/products/selectColor/color1.jpeg";
-import colorTwo from "../../../assets/products/selectColor/color2.jpeg";
-
 import cardIcon from "../../../assets/products/paymentIcon/card.png";
 import cashOnDeliveryIcon from "../../../assets/products/paymentIcon/cashOnDelivery.png";
 import flipkartAssuredIcon from "../../../assets/products/paymentIcon/flipkartAssured.png";
@@ -34,10 +25,6 @@ export const productAssets = {
   cartIcon,
   likeIcon,
   shareIcon,
-  mainImage,
-  galleryImages: [mainImage, galleryOne, galleryTwo, galleryThree, galleryFour],
-  colorOne,
-  colorTwo,
   cardIcon,
   cashOnDeliveryIcon,
   flipkartAssuredIcon,
@@ -91,16 +78,5 @@ export const productContent = {
     { id: "description", label: "Description" },
     { id: "manufacturer", label: "Manufacturer info" },
   ],
-  generalDetails: [
-    ["Brand", "Portronics"],
-    ["Model Name", "Vader 2.0"],
-    ["System Requirements", "NA"],
-    ["Form Factor", "Ergonomic"],
-    ["Sales Package", "1 mouse"],
-    ["Compatible Devices", "Laptop, PC"],
-    ["Color", "Black"],
-    ["Gaming", "Yes"],
-    ["Wired/Wireless", "Wired"],
-    ["Interface", "USB 2.0"],
-  ],
+  generalDetails: [],
 };

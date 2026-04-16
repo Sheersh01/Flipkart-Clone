@@ -10,7 +10,7 @@ function HomeLayout() {
     <div className="flipkart-app" id="app-root">
       <header id="main-header">
         <TopNav />
-        <SearchNav />
+        <SearchNav showActions />
         <IconNav />
       </header>
       <Home />
