@@ -1,90 +1,160 @@
-# Flipkart Clone - Fullstack E-Commerce Platform
+# Flipkart Clone - Fullstack Commerce Application
 
-This repository contains a Flipkart-inspired e-commerce platform built as a fullstack assignment.
+This repository contains a multi-app Flipkart-style commerce system with:
+
+- customer storefront (frontend)
+- admin dashboard (admin)
+- REST API with PostgreSQL (backend)
 
 ## Tech Stack
 
-- Frontend: React (Vite, SPA)
-- Backend: Node.js + Express
+- Frontend: React 19 + Vite + React Router
+- Admin: React 19 + TypeScript + Vite
+- Backend: Node.js + Express + pg + JWT
 - Database: PostgreSQL
+- External catalog source: DummyJSON products API
 
-## Implemented Features
+## What Is Implemented
 
-### Core Features
+### Customer App
 
-1. Product Listing Page
-- Product grid in Flipkart-style layout
-- Search by product or brand
-- Filter by category
+- Product browsing, search, and category filtering
+- Product details with image gallery, pricing, stock, and specs
+- Register/login/logout with JWT-backed session
+- Auth-protected cart and order history pages
+- Cart add/update/remove with live summary totals
+- Checkout summary, payment simulation, order creation, and order confirmation
 
-2. Product Detail Page
-- Product image gallery
-- Dynamic title, pricing, stock-aware data
-- Add to Cart and Buy Now actions
+How it is implemented:
 
-3. Shopping Cart
-- View cart items
-- Update quantity
-- Remove items
-- Dynamic cart summary (MRP, discount, fee, total)
+- App-wide auth/cart UI state is centralized via React Context in frontend/src/context/AppContext.jsx.
+- Frontend product listing and detail data are fetched from DummyJSON through frontend/src/lib/apiClient.js.
+- Cart, checkout, and orders are persisted through backend APIs.
 
-4. Order Placement
-- Shipping address form
-- Order summary review
-- Payment page with exactly 3 methods: Razorpay, Stripe, Cash on Delivery
-- Place order and payment processing
-- Order confirmation page with order ID
+### Backend API
 
-### Bonus/Extra
-- Flipkart-like UI retained with backend-driven data
-- Seeded sample products across multiple categories
+- Auth routes: register, login, logout (JWT + password hashing)
+- Cart routes: add/update/remove/list cart items with stock checks
+- Checkout and order routes: summary, place order, list/fetch orders
+- Admin routes for products and orders (CRUD + status updates)
 
-## Project Structure
+How it is implemented:
 
-- frontend/: React application
-- backend/: Express API + PostgreSQL setup scripts
+- Passwords are hashed with Node crypto scrypt.
+- Auth uses Bearer JWT tokens with issuer/audience checks.
+- On cart/checkout access, backend can sync product records from EXTERNAL_PRODUCTS_API into local Postgres tables to keep cart/order data consistent.
+- Database bootstrap runs during backend startup before app.listen, so required schema is created on first run.
 
-## Backend Setup (PostgreSQL)
+### Admin App
 
-1. Create a PostgreSQL database (example: flipkart_clone).
-2. Configure backend environment variables:
-- Copy backend/.env.example to backend/.env
-- Update credentials if needed (PGHOST, PGPORT, PGUSER, PGPASSWORD, PGDATABASE)
-3. Install dependencies:
+- Product management (list, create, update, delete)
+- Order management (list, details, update order/payment statuses)
+- Dashboard counters for total products/orders and low stock
+
+How it is implemented:
+
+- Admin UI calls dedicated backend admin endpoints from admin/src/App.tsx.
+- Product form supports image URL list and key:value specification parsing.
+
+## Repository Structure
+
+- frontend: customer SPA
+- admin: internal admin SPA
+- backend: API server, DB schema, and migration/setup scripts
+
+## Environment Variables
+
+Backend environment file: backend/.env
+
+- PORT
+- FRONTEND_ORIGIN
+- ALLOWED_ORIGINS
+- DATABASE_URL (optional, takes precedence over PG\* vars)
+- PGHOST
+- PGPORT
+- PGUSER
+- PGPASSWORD
+- PGDATABASE
+- JWT_SECRET
+- JWT_EXPIRES_IN
+- PAYMENT_CURRENCY
+- EXTERNAL_PRODUCTS_API
+
+Frontend environment file: frontend/.env
+
+- VITE_API_URL (example: http://localhost:4000/api)
+- VITE_PRODUCTS_API_URL (optional, defaults to https://dummyjson.com)
+
+Admin environment file: admin/.env
+
+- VITE_API_URL (example: http://localhost:4000/api)
+
+## Local Development
+
+1. Start PostgreSQL and create database flipkart_clone.
+2. Configure backend/.env.
+3. Install and start backend.
+
 ```bash
 cd backend
 npm install
-```
-4. Run schema and seed:
-```bash
-npm run db:setup
-```
-5. Start backend:
-```bash
 npm run dev
 ```
 
-Backend runs at http://localhost:4000 by default.
+4. Install and start frontend.
 
-## Frontend Setup
-
-1. Configure frontend API URL:
-- Copy frontend/.env.example to frontend/.env
-2. Install dependencies and run:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-Frontend runs at http://localhost:5173 by default.
+5. Install and start admin.
 
-## API Summary
+```bash
+cd admin
+npm install
+npm run dev
+```
+
+Default local ports:
+
+- backend: 4000
+- frontend: 5173
+- admin: 5174 (or next available Vite port)
+
+## Build Commands
+
+- frontend: npm run build
+- admin: npm run build
+- backend: npm start
+
+## Deployment Notes
+
+- Frontend/Admin can be deployed to Vercel as static Vite apps.
+- Backend can be deployed to Render as a Node web service.
+- On Render, set DATABASE_URL to your Postgres instance and verify startup logs show database bootstrap completed.
+
+## Key API Groups
+
+Public:
 
 - GET /api/health
+
+Auth:
+
+- POST /api/auth/register
+- POST /api/auth/login
+- POST /api/auth/logout
+
+Storefront:
+
 - GET /api/categories
 - GET /api/products
 - GET /api/products/:id
+
+Authenticated cart/checkout/order:
+
 - GET /api/cart
 - POST /api/cart/items
 - PATCH /api/cart/items/:itemId
@@ -92,33 +162,20 @@ Frontend runs at http://localhost:5173 by default.
 - GET /api/checkout/summary
 - POST /api/orders
 - POST /api/payments
+- GET /api/orders
 - GET /api/orders/:id
 
-## Database Design
+Admin:
 
-Main tables:
-- users
-- categories
-- products
-- product_images
-- cart_items
-- orders
-- order_items
+- GET /api/admin/products
+- POST /api/admin/products
+- PUT /api/admin/products/:id
+- DELETE /api/admin/products/:id
+- GET /api/admin/orders
+- GET /api/admin/orders/:id
+- PATCH /api/admin/orders/:id/status
 
-Relationships:
-- categories 1:N products
-- products 1:N product_images
-- users 1:N cart_items
-- users 1:N orders
-- orders 1:N order_items
+## Current Notes
 
-## Assumptions
-
-- No login flow is required. A default seeded user is used.
-- Cart and orders are scoped to DEFAULT_USER_ID (default: 1).
-- Payment methods are simulated (Razorpay, Stripe, COD) for assignment workflow.
-
-## Notes
-
-- If db:setup fails with authentication error, verify PostgreSQL credentials in backend/.env.
-- Frontend build has been validated successfully after integration.
+- Admin endpoints are currently open (no separate admin auth middleware yet).
+- Payment providers are simulated through backend service logic, not external gateways.

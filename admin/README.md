@@ -1,75 +1,66 @@
-# React + TypeScript + Vite
+# Admin Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the internal admin SPA for catalog and order operations.
 
-Currently, two official plugins are available:
+## Implemented Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Product listing with search/category filters
+- Add product form
+- Edit existing product
+- Delete product (blocked if order history exists)
+- Order listing and detail view
+- Order status and payment status updates
+- Basic dashboard stats (products, orders, low stock, active orders)
 
-## React Compiler
+## How It Is Implemented
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+Core implementation is in admin/src/App.tsx.
 
-Note: This will impact Vite dev & build performances.
+- A single-page tabbed dashboard drives products, add/edit form, and orders.
+- API integration is done through a typed request helper using VITE_API_URL.
+- Product specifications are entered as multiline key:value text and parsed into an object payload.
+- Product image URLs are managed as an ordered array and sent as imageKeys.
 
-## Expanding the ESLint configuration
+## Backend Endpoints Used
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- GET /api/admin/products
+- POST /api/admin/products
+- PUT /api/admin/products/:id
+- DELETE /api/admin/products/:id
+- GET /api/admin/orders
+- GET /api/admin/orders/:id
+- PATCH /api/admin/orders/:id/status
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Environment Variables
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Create admin/.env with:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_API_URL=http://localhost:4000/api
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Run Locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+cd admin
+npm install
+npm run dev
 ```
+
+Default URL: http://localhost:5174 (or next free Vite port).
+
+## Build
+
+```bash
+npm run build
+npm run preview
+```
+
+Build uses TypeScript project references:
+
+- tsc -b
+- vite build
+
+## Current Security Note
+
+Admin backend endpoints are currently not protected by separate admin authentication middleware.
