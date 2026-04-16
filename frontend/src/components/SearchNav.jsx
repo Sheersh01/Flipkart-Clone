@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import flipkartLogo from "../assets/home/topNav/flipkart.png";
 import flipkartIcon from "../assets/home/topNav/flipkartIcon.png";
 import "./SearchNav.css";
+import { useDebounce } from "../hooks/useDebounce";
 
 import SearchNavActions from "./SearchNavActions";
 
@@ -15,21 +16,26 @@ function SearchNav({ showActions = false, showBrandButton = false }) {
     return params.get("q") || params.get("search") || "";
   }, [location.search]);
   const [query, setQuery] = useState(currentSearchQuery);
+  const debouncedQuery = useDebounce(query, 300);
 
   useEffect(() => {
     setQuery(currentSearchQuery);
   }, [currentSearchQuery]);
 
+  // Auto-search as user types (with debouncing)
+  useEffect(() => {
+    const trimmedQuery = debouncedQuery.trim();
+    if (trimmedQuery) {
+      navigate(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+    } else {
+      // If search is cleared, go back to home
+      navigate("/");
+    }
+  }, [debouncedQuery, navigate]);
+
   function handleSearchSubmit(event) {
     event.preventDefault();
-    const trimmed = query.trim();
-
-    if (!trimmed) {
-      navigate("/");
-      return;
-    }
-
-    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    // Search is now handled by the debounced effect, so no action needed here
   }
 
   return (
