@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { env } = require("./src/config/env");
 const { apiRouter } = require("./src/routes/api");
+const { bootstrapDatabase } = require("./src/db/bootstrap");
 
 const app = express();
 
@@ -34,6 +35,16 @@ app.use((err, req, res, next) => {
   res.status(statusCode).json({ message });
 });
 
-app.listen(env.port, () => {
-  console.log(`Backend running on http://localhost:${env.port}`);
-});
+async function start() {
+  try {
+    await bootstrapDatabase();
+    app.listen(env.port, () => {
+      console.log(`Backend running on http://localhost:${env.port}`);
+    });
+  } catch (error) {
+    console.error("Backend startup failed:", error);
+    process.exitCode = 1;
+  }
+}
+
+start();
